@@ -10,10 +10,11 @@
 
 ## How to run
 
-- `python src\main.py` — default input `dados/entrada/beneficiarios.csv` → output `dados/saida/resultado.xlsx`
+- `python src\main.py` — default input `dados/entrada/beneficiarios.csv` → output `dados/saida/resultado_YYYY_MM_DD.xlsx`
 - `python src\main.py --validar` — only test API connectivity
 - `python src\main.py <input.csv> <output.xlsx>` — explicit paths
-- `Atualizar valores.bat` — double-click launcher for end users
+- `Atualizar valores.bat` — double-click launcher for end users (uses SAIDA_PADRAO)
+- `Pipeline completo.bat` — double-click launcher for --completo pipeline
 - `python src\Extrator.py` — interactive CLI (prompts for credentials)
 - `python src\main.py --completo <input.csv> <output.xlsx>` — pipeline completo SIGRH + SEGURIDADE + correção
 - `python src\main.py --completo --xls <ficha.xls> <input.csv> <output.xlsx>` — pipeline com ficha já baixada
@@ -41,6 +42,7 @@ src/Analisador.py    → Extrai valores 40920 SEGURIDADE SOCIAL do .xls + aplica
 - API: requires browser `User-Agent` header, 0.2s pause between calls, no auth.
 - IPCA-E series fetched once per run (cached in `SindecClient._cache_ipcae`).
 - Console: `sys.stdout` / `sys.stderr` reconfigured to UTF-8 (Windows cp1252 fix in `main.py`).
+- **Diferenca (50920)**: extraído como tipo `diferenca`, renderizado com descrição `DIFERENÇA DE SEGURIDADE SOCIAL`. Ordenação: regular → diferenca → decimo_terceiro, cronológico.
 
 ## Input format
 
@@ -51,7 +53,7 @@ Date formats: `MM/AAAA`, `DD/MM/AAAA`, `AAAA-MM`, or PT-BR abbreviated (`ago/23`
 
 ## Validation rule
 
-Always cross-check against `dados/validacao/` before concluding. Reference: Levi Batista (R$ 7.561,93 → R$ 7.731,98, difference R$ 0.00).
+Always cross-check against `dados/validacao/` before concluding. Reference: Levi Batista (R$ 7.561,93 → R$ 7.731,98, difference R$ 0.00). For --completo, reference: JOAO RESENDE FILHO (mat 835498, orgão 652) — valores 2023 R$ 386~423 → corrigido R$ 18.769,81 (38 parcelas).
 
 ## Phase rule
 
@@ -81,9 +83,9 @@ senha_sigrh=SUA_SENHA_AQUI
 
 ### Analisador.py (SEGURIDADE SOCIAL extraction)
 
-- Uses **last** occurrence per year (second vínculo, higher values)
+- Uses **first** occurrence per year (first vínculo, lower values). **Bug fix**: changed from `anos[ano_atual][tipo] = valores` (last wins) to `if tipo not in anos[ano_atual]: anos[ano_atual][tipo] = valores` (first wins) — beneficiaries with two vínculos had 40920 values above TETO from the second vínculo, causing all values to cap at TETO erroneously.
 - Caps at TETO per year
-- Extracts 40920 (regular) + 40923 (13th salary)
+- Extracts 40920 (regular) + 40923 (13th salary) + 50920 (diferença)
 - Output: list of dicts with competencia, valor_seg_social, teto_ano, valor_final
 
 ## PII

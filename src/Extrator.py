@@ -22,7 +22,7 @@ def run(
     competencia_final: str,
     codigo_empresa: str = "990",
     pasta_destino: str | Path = None,
-    headless: bool = False,
+    headless: bool = True,
 ) -> tuple[str | None, str | None]:
     if pasta_destino is None:
         pasta_destino = PADRAO_DESTINO
