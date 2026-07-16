@@ -75,8 +75,8 @@ Date formats: `MM/AAAA`, `DD/MM/AAAA`, `AAAA-MM`, or PT-BR abbreviated (`ago/23`
 ### .env credentials
 
 ```env
-matricula_sigrh=2874946
-senha_sigrh=070790
+matricula_sigrh=SUA_MATRICULA_AQUI
+senha_sigrh=SUA_SENHA_AQUI
 ```
 
 ### Analisador.py (SEGURIDADE SOCIAL extraction)

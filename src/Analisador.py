@@ -34,6 +34,7 @@ TETO: Dict[int, float] = {
 CODIGOS = {
     "regular": (r"40920\s+SEGURIDADE SOCIAL", 1),
     "decimo": (r"40923\s+SEGURIDADE\.SOC\.GRAT\.NATALICIA", 2),
+    "diferenca": (r"50920\s+DIF\.\s*SEGURIDADE SOCIAL", 3),
 }
 
 
@@ -111,13 +112,29 @@ def aplicar_teto(valores_por_ano: Dict[int, Dict[str, List[float]]]) -> Dict[int
     return resultado
 
 
+def _emitir_entrada(
+    competencia: str,
+    valor_original: float,
+    valor_final: float,
+    teto: float,
+    origem: str = "40920",
+) -> Dict:
+    return {
+        "competencia": competencia,
+        "valor_seg_social": valor_original,
+        "teto_ano": teto,
+        "valor_final": valor_final,
+        "origem": origem,
+    }
+
+
 def gerar_matriz_mensal(
     valores_por_ano: Dict[int, Dict[str, List[float]]],
     data_inicio: str,
     data_fim: str,
 ) -> List[Dict]:
     """
-    Gera a matriz de saída para cada mês + 13º salário no período.
+    Gera a matriz de saída para cada mês + 13º salário + diferenças 50920.
     """
     def _parse_data(d: str) -> Tuple[int, int]:
         d = d.replace("-", "/")
@@ -137,20 +154,27 @@ def gerar_matriz_mensal(
         dados_ano = valores_por_ano.get(ano, {})
         teto = TETO.get(ano, 0.0)
         vals_reg = dados_ano.get("regular", [])
+        vals_dif = dados_ano.get("diferenca", [])
         vals_dec = dados_ano.get("decimo", [])
 
+        # Entrada regular 40920
         valor_original = 0.0
         valor_final = 0.0
         if vals_reg and mes <= len(vals_reg):
             valor_original = vals_reg[mes - 1]
             valor_final = cappados[ano]["regular"][mes - 1]
 
-        resultado.append({
-            "competencia": competencia,
-            "valor_seg_social": valor_original,
-            "teto_ano": teto,
-            "valor_final": valor_final,
-        })
+        resultado.append(
+            _emitir_entrada(competencia, valor_original, valor_final, teto, "40920")
+        )
+
+        # Entrada extra 50920 (diferença) se houver valor
+        if vals_dif and mes <= len(vals_dif) and vals_dif[mes - 1] != 0:
+            dif_original = vals_dif[mes - 1]
+            dif_final = min(dif_original, teto) if teto else dif_original
+            resultado.append(
+                _emitir_entrada(competencia, dif_original, dif_final, teto, "50920")
+            )
 
         mes += 1
         if mes > 12:
@@ -159,13 +183,13 @@ def gerar_matriz_mensal(
                 dec_val = sum(vals_dec)
                 dec_final = dec_val
                 if teto:
-                    # O 13º é uma parcela única, aplicar teto no total
                     dec_final = min(dec_val, teto)
                 resultado.append({
                     "competencia": f"{ano:04d}-13",
                     "valor_seg_social": dec_val,
                     "teto_ano": teto,
                     "valor_final": dec_final,
+                    "origem": "40923",
                 })
             mes = 1
             ano += 1

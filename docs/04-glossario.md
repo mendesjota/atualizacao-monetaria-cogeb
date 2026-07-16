@@ -1,41 +1,76 @@
-# Glossário
+# Glossário — termos usados no projeto
 
-Termos usados no projeto, em linguagem simples.
+Em linguagem simples, para quem não é da área de economia ou TI.
 
-- **Atualização monetária (correção monetária):** trazer um valor do passado
-  para uma data de referência, corrigindo a perda do poder de compra pela
-  inflação. Não é juro — é só "recompor" o valor.
+---
 
-- **Valor presente:** o quanto um valor do passado "vale" hoje (ou na data-alvo),
-  já corrigido.
+### Atualização monetária (correção monetária)
 
-- **Índice econômico:** número que mede a variação de preços ao longo do tempo.
-  Exemplos: IPCA, IPCA-E, INPC, IGP-M. Cada mês tem um valor de índice.
+Aplicar a inflação em um valor do passado para saber quanto ele "vale" hoje.
+Não é juro — é só para não perder o poder de compra.
 
-- **Fator de correção:** razão entre o índice da data final e o da data inicial.
-  `fator = índice_final / índice_inicial`. Multiplica o valor original.
+> Exemplo: R$ 1.000,00 de janeiro viram R$ 1.072,60 em julho por causa da
+> inflação do período.
 
-- **Competência:** o mês/ano a que um valor se refere (ex.: salário de jan/2024
-  tem competência 01/2024).
+### Índice econômico
 
-- **Pro-rata die:** cálculo proporcional aos dias, quando o período não fecha
-  um mês cheio. Fonte comum de pequenas divergências entre cálculos.
+Número que mede quanto os preços subiram num período. Exemplos:
+- **IPCA-E**: índice oficial usado neste projeto (mede inflação mês a mês)
+- **INPC**: outro índice, parecido, mas anual
+- **IGP-M**: índice usado em contratos de aluguel
 
-- **Juros de mora:** acréscimo por atraso, aplicado (quando cabível) **sobre** o
-  valor já corrigido. Correção ≠ juros; podem ou não incidir juntos.
+### Fator de correção
 
-- **SINDEC:** Sistema de Índices e Indicadores Econômicos e de Atualização de
-  Valores, do TCDF. A calculadora que este projeto automatiza.
+O "multiplicador" que transforma o valor antigo no valor corrigido.
+Exemplo: fator 0,0726 = 7,26% de correção.
 
-- **TCDF:** Tribunal de Contas do Distrito Federal.
+### Competência
 
-- **COGEB:** área/equipe que executa o processo (usuária desta ferramenta).
+O mês e ano a que um valor se refere. Exemplo: "salário de janeiro/2024"
+tem competência `01/2024`.
 
-- **API / endpoint:** endereço no servidor que recebe dados e devolve um
-  resultado. Se a calculadora tiver um, dá para "conversar" com ela por
-  programa em vez de digitar na tela.
+### Data-alvo (data de atualização)
 
-- **Payload:** os dados enviados numa requisição (ex.: valor, datas, índice).
+A data para a qual você está trazendo os valores. Geralmente é a data do
+cálculo ou a data em que o processo foi aberto.
 
-- **Gabarito de validação:** um cálculo feito manualmente no site, guardado para
-  conferir se a automação chega no mesmo número.
+### Teto (cap)
+
+Valor máximo permitido por mês. A SEGURIDADE SOCIAL tem um teto que muda
+todo ano. Se o valor ultrapassar o teto, o programa usa o teto.
+
+### SINDEC / TCDF
+
+**SINDEC** = Sistema do Tribunal de Contas do DF que calcula correção
+monetária. A ferramenta consulta automática esse sistema pela internet.
+
+### SIGRH
+
+Sistema de RH do Governo do Distrito Federal. É de lá que a ferramenta
+baixa a Ficha Financeira de cada empregado.
+
+### Ficha Financeira
+
+Documento do SIGRH que mostra todos os valores recebidos por um empregado
+mês a mês (salário, seguridade social, 13º etc.).
+
+### SEGURIDADE SOCIAL (código 40920)
+
+Um tipo de valor que aparece na Ficha Financeira. É a contribuição do
+empregado para a seguridade social (previdência). O código 40920 é como
+o SIGRH identifica essa rubrica.
+
+### 13º salário (código 40923)
+
+A parcela do 13º salário que também aparece na Ficha Financeira, com
+código próprio (40923).
+
+### CSV
+
+Tipo de arquivo que o Excel consegue ler e salvar. As colunas são
+separadas por `;` (ponto e vírgula). É o formato da planilha de entrada.
+
+### Pipeline
+
+O "caminho" que os dados percorrem: baixar ficha → extrair valores →
+corrigir → gerar Excel. O `--completo` faz o pipeline inteiro de uma vez.

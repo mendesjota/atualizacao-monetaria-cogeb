@@ -13,14 +13,18 @@ cd /d "%~dp0"
 
 set "PY=.venv\Scripts\python.exe"
 if not exist "%PY%" (
-  echo [ERRO] Ambiente Python (.venp) nao encontrado.
+  echo [ERRO] Ambiente Python (.venv) nao encontrado.
   echo Rode uma vez:  python -m venv .venv  ^&^&  .venv\Scripts\pip install -r requirements.txt
   pause
   exit /b 1
 )
 
 if "%~1"=="" (
-  set "ENTRADA=dados\entrada\beneficiarios.csv"
+  if exist "dados\entrada\beneficiarios.csv" (
+    set "ENTRADA=dados\entrada\beneficiarios.csv"
+  ) else (
+    set "ENTRADA=dados\entrada\_modelo_entrada.csv"
+  )
 ) else (
   set "ENTRADA=%~1"
 )
@@ -31,7 +35,7 @@ echo.
 echo Entrada: %ENTRADA%
 echo.
 
-"%PY%" "src\main.py" --completo "%ENTRADA%"
+"%PY%" "src\main.py" --completo "%ENTRADA%" %*
 
 echo.
 if errorlevel 1 (

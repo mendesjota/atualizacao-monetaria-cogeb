@@ -92,9 +92,31 @@ def _obter_credenciais_sigrh():
     return login, senha
 
 
+def _baixar_ficha(login: str, senha: str, ben, pasta: Path) -> tuple[str | None, str | None]:
+    """Baixa a ficha com retry em caso de timeout."""
+    import time
+    ano_ini = str(ben.competencia_inicial.year)
+    ano_fim = str(ben.competencia_final.year)
+    print(f"  Baixando ficha financeira ({ano_ini}-{ano_fim})...")
+    from Extrator import run as extrator_run
+
+    for tentativa in range(3):
+        ficha_path, erro = extrator_run(
+            matricula_login=login, senha_login=senha,
+            matricula_empregado=ben.matricula,
+            competencia_inicial=ano_ini, competencia_final=ano_fim,
+            codigo_empresa=ben.orgao, pasta_destino=pasta, headless=False,
+        )
+        if ficha_path and not erro:
+            return ficha_path, None
+        if tentativa < 2:
+            print(f"  ⏳ Falha — aguardando 15s e tentando novamente ({tentativa+1}/2)...")
+            time.sleep(15)
+    return None, erro
+
+
 def main_completo(entrada: Path, saida: Path, xls_path: Path = None) -> int:
     from Analisador import analisar
-    from Extrator import run as extrator_run
 
     if not entrada.exists():
         print(f"✖ Entrada não encontrada: {entrada}")
@@ -115,7 +137,6 @@ def main_completo(entrada: Path, saida: Path, xls_path: Path = None) -> int:
         for i, ben in enumerate(beneficiarios, start=1):
             print(f"\n[{i}/{len(beneficiarios)}] {ben.nome} — matrícula {ben.matricula}")
 
-            # Formatar competência para o Analisador
             data_ini = f"{ben.competencia_inicial.month:02d}/{ben.competencia_inicial.year}"
             data_fim = f"{ben.competencia_final.month:02d}/{ben.competencia_final.year}"
 
@@ -124,19 +145,7 @@ def main_completo(entrada: Path, saida: Path, xls_path: Path = None) -> int:
                 ficha_path = xls_path
                 print(f"  Usando ficha existente: {ficha_path}")
             else:
-                ano_ini = str(ben.competencia_inicial.year)
-                ano_fim = str(ben.competencia_final.year)
-                print(f"  Baixando ficha financeira ({ano_ini}-{ano_fim})...")
-                ficha_path, erro = extrator_run(
-                    matricula_login=login,
-                    senha_login=senha,
-                    matricula_empregado=ben.matricula,
-                    competencia_inicial=ano_ini,
-                    competencia_final=ano_fim,
-                    codigo_empresa=ben.orgao,
-                    pasta_destino=RAIZ / "fichas financeiras",
-                    headless=False,
-                )
+                ficha_path, erro = _baixar_ficha(login, senha, ben, RAIZ / "fichas financeiras")
                 if erro or not ficha_path:
                     print(f"  ✖ Falha no Extrator: {erro}")
                     continue

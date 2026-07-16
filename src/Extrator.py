@@ -94,12 +94,12 @@ def run(
 
             # ── 8. Tentativa 1: EXCEL com expect_download ──
             try:
-                with context.expect_event("download", timeout=180000) as di:
-                    with page.expect_popup(timeout=30000) as pi:
+                with context.expect_event("download", timeout=360000) as di:
+                    with page.expect_popup(timeout=60000) as pi:
                         corpo.get_by_role("button", name="EXCEL").click()
                     popup = pi.value
                     print("[SIGRH] Popup EXCEL aberta, aguardando...")
-                    popup.wait_for_selector("#fimdoprocesso", state="visible", timeout=120000)
+                    popup.wait_for_selector("#fimdoprocesso", state="visible", timeout=300000)
                     print("[SIGRH] Processo finalizado, capturando download...")
 
                 download = di.value
@@ -121,12 +121,12 @@ def run(
             except Exception:
                 pass
 
-            with context.expect_page(timeout=30000) as page_info:
+            with context.expect_page(timeout=60000) as page_info:
                 corpo.locator("#btnPDF").click()
             nova_pagina = page_info.value
             print("[SIGRH] Popup PDF aberta, aguardando download...")
 
-            with nova_pagina.expect_download(timeout=240000) as di:
+            with nova_pagina.expect_download(timeout=360000) as di:
                 pass
             download = di.value
             nome = download.suggested_filename or f"ficha_{matricula_empregado}_{int(time.time())}.pdf"

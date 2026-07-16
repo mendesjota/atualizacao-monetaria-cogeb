@@ -12,6 +12,7 @@ import re
 from collections import defaultdict
 from dataclasses import dataclass, field
 from datetime import date
+from itertools import groupby
 from typing import Literal
 
 from sindec_api import SindecClient
@@ -42,7 +43,7 @@ class ParcelaCalculada:
     correcao: float
     fator: float
     indice: str
-    tipo: Literal["regular", "decimo_terceiro"] = "regular"
+    tipo: Literal["regular", "decimo_terceiro", "diferenca"] = "regular"
 
 
 @dataclass
@@ -197,24 +198,21 @@ def gerar_parcelas_13(
 
 
 def _ordenar_ods(parcelas: list[ParcelaCalculada]) -> list[ParcelaCalculada]:
-    """Ordena: regulares por (ano, mês), 13º após dezembro de cada ano."""
-    reg = sorted(
-        [p for p in parcelas if p.tipo == "regular"],
+    """Ordena: mensais por (ano, mês), 13º após dezembro de cada ano."""
+    mensais = sorted(
+        [p for p in parcelas if p.tipo != "decimo_terceiro"],
         key=lambda p: (p.competencia.year, p.competencia.month),
     )
     dec = sorted(
         [p for p in parcelas if p.tipo == "decimo_terceiro"],
         key=lambda p: (p.competencia.year, 13),
     )
-    # Intercala: para cada ano, regulares depois 13º
-    from itertools import groupby
     result: list[ParcelaCalculada] = []
-    for ano, grupo in groupby(reg, key=lambda p: p.competencia.year):
+    for ano, grupo in groupby(mensais, key=lambda p: p.competencia.year):
         result.extend(grupo)
         for d in dec:
             if d.competencia.year == ano:
                 result.append(d)
-    # 13º de anos que só têm 13º (não deve acontecer)
     for d in dec:
         if d not in result:
             result.append(d)
@@ -285,11 +283,16 @@ def processar_beneficiario_com_analise(
     for row in analise:
         comp_str: str = row["competencia"]  # "2023-08" ou "2023-13"
         valor_final: float = row["valor_final"]
+        origem: str = row.get("origem", "40920")
 
         if comp_str.endswith("-13"):
             ano = int(comp_str[:4])
             comp = date(ano, 12, 1)
-            tipo: Literal["regular", "decimo_terceiro"] = "decimo_terceiro"
+            tipo: Literal["regular", "decimo_terceiro", "diferenca"] = "decimo_terceiro"
+        elif origem == "50920":
+            ano_s, mes_s = comp_str.split("-")
+            comp = date(int(ano_s), int(mes_s), 1)
+            tipo = "diferenca"
         else:
             ano_s, mes_s = comp_str.split("-")
             comp = date(int(ano_s), int(mes_s), 1)

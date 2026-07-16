@@ -19,6 +19,9 @@ fichas financeiras/
 # Credenciais
 .env
 
+# Protótipos descartáveis (podem conter credenciais)
+codigo_gerado.py
+
 # Sistema
 Thumbs.db
 desktop.ini
@@ -27,3 +30,5 @@ desktop.ini
 # Editores
 .vscode/
 .idea/
+AGENTS.md
+CLAUDE.md

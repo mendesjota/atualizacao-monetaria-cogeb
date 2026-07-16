@@ -135,10 +135,6 @@ _MESES_ABR = {1: "jan", 2: "fev", 3: "mar", 4: "abr", 5: "mai", 6: "jun",
               7: "jul", 8: "ago", 9: "set", 10: "out", 11: "nov", 12: "dez"}
 
 
-def _data_curta(d) -> str:
-    return f"{d.day:02d}/{d.month:02d}/{d.year % 100:02d}"
-
-
 def _mes_ano_abrev(d) -> str:
     return f"{_MESES_ABR[d.month]}/{d.year % 100:02d}"
 
@@ -192,10 +188,7 @@ def _escrever_celula(ws, linha, col, valor=None, font=None, number_format=None,
 
 
 def _bloco_beneficiario(ws, linha, r) -> None:
-    reg = [p for p in r.parcelas if p.tipo == "regular"]
-    dec = [p for p in r.parcelas if p.tipo == "decimo_terceiro"]
-
-    # ── NOME / ÓRGÃO (bordas só em A-D, col 1-4) ──
+    # ── NOME / ÓRGÃO ──
     _escrever_celula(ws, linha, 1, "NOME:", _FONTE_NOME_LABEL, alignment=_ALINH_ESQ,
                      fill=_FILL_BRANCO, border=_BORDA_FINA)
     _escrever_celula(ws, linha, 2, f"{r.nome} - MATRÍCULA {r.matricula}",
@@ -206,7 +199,7 @@ def _bloco_beneficiario(ws, linha, r) -> None:
                      alignment=_ALINH_CENTRO, fill=_FILL_BRANCO, border=_BORDA_FINA)
     linha += 1
 
-    # ── Cabeçalho da tabela (bordas só em A-G, col 1-7) ──
+    # ── Cabeçalho da tabela ──
     titulos = [
         "Data do Valor Original", "Valor Original", "Descrição",
         "Data de Atualização", "Atualização Monetária",
@@ -215,27 +208,29 @@ def _bloco_beneficiario(ws, linha, r) -> None:
     for col, t in enumerate(titulos, start=1):
         _escrever_celula(ws, linha, col, t, _FONTE_CAB,
                          alignment=_ALINH_CAB, border=_BORDA_FINA)
-    linha_cab = linha
     linha += 1
 
-    # ── Dados regulares ──
-    linha_ini_reg = linha
-    for p in reg:
-        _escrever_linha_dados(ws, linha, p, r, tipo="regular")
+    # ── Todos os dados na ordem de _ordenar_ods ──
+    linha_ini = linha
+    linha_fim_mensal = None
+    linha_fim_13 = None
+    for p in r.parcelas:
+        _escrever_linha_dados(ws, linha, p, r, tipo=p.tipo)
+        if p.tipo != "decimo_terceiro":
+            linha_fim_mensal = linha
+        else:
+            linha_fim_13 = linha
         linha += 1
-    linha_fim_reg = linha - 1
-
-    # ── Dados 13º ──
-    linha_ini_13 = linha
-    for p in dec:
-        _escrever_linha_dados(ws, linha, p, r, tipo="decimo_terceiro")
-        linha += 1
-    linha_fim_13 = linha - 1
+    if linha_fim_13 is None:
+        linha_fim_13 = linha_fim_mensal
+    if linha_fim_mensal is None:
+        linha_fim_mensal = linha_fim_13
+    linha_fim_tudo = max(linha_fim_mensal, linha_fim_13)
 
     # ── Total ──
-    tem_dados = linha_fim_13 >= linha_ini_reg
-    primeiro = linha_ini_reg
-    ultimo = linha_fim_13 if tem_dados else primeiro
+    primeiro = linha_ini
+    ultimo = linha_fim_tudo
+    tem_dados = ultimo >= primeiro
 
     _escrever_celula(ws, linha, 1, "Total:", _FONTE_TOTAL,
                      alignment=_ALINH_CENTRO, fill=_FILL_BRANCO, border=_BORDA_FINA)
@@ -261,39 +256,27 @@ def _bloco_beneficiario(ws, linha, r) -> None:
                      alignment=_ALINH_CENTRO, border=_BORDA_FINA)
     linha += 1
 
-    # 30920
+    # 30920 — regular + diferença
     _escrever_celula(ws, linha, 1, "30920 - SEGURIDADE SOCIAL", _FONTE_RUB_TITULO,
                      alignment=_ALINH_CENTRO, fill=_FILL_VERDE, border=_BORDA_FINA)
-    if reg:
-        _escrever_celula(ws, linha, 2, f"=SUM(B{linha_ini_reg}:B{linha_fim_reg})",
-                         _FONTE_RUB_VALOR, _MOEDA, _ALINH_CENTRO, _FILL_VERDE, _BORDA_FINA)
-    else:
-        _escrever_celula(ws, linha, 2, 0.0, _FONTE_RUB_VALOR, _MOEDA,
-                         _ALINH_CENTRO, _FILL_VERDE, _BORDA_FINA)
+    _escrever_celula(ws, linha, 2, f"=SUM(B{linha_ini}:B{linha_fim_mensal})",
+                     _FONTE_RUB_VALOR, _MOEDA, _ALINH_CENTRO, _FILL_VERDE, _BORDA_FINA)
     _escrever_celula(ws, linha, 3, mes_alvo, _FONTE_RUB_TITULO,
                      alignment=_ALINH_CENTRO, border=_BORDA_FINA)
     linha += 1
 
-    # 30923
+    # 30923 — 13º salário
     _escrever_celula(ws, linha, 1, "30923 - SEG. SOC. - 13º SAL.", _FONTE_RUB_TITULO,
                      alignment=_ALINH_CENTRO, fill=_FILL_VERDE, border=_BORDA_FINA)
-    if dec:
-        _escrever_celula(ws, linha, 2, f"=SUM(B{linha_ini_13}:B{linha_fim_13})",
-                         _FONTE_RUB_VALOR, _MOEDA, _ALINH_CENTRO, _FILL_VERDE, _BORDA_FINA)
-    else:
-        _escrever_celula(ws, linha, 2, 0.0, _FONTE_RUB_VALOR, _MOEDA,
-                         _ALINH_CENTRO, _FILL_VERDE, _BORDA_FINA)
+    _escrever_celula(ws, linha, 2, f"=SUM(B{linha_fim_mensal + 1}:B{linha_fim_13})",
+                     _FONTE_RUB_VALOR, _MOEDA, _ALINH_CENTRO, _FILL_VERDE, _BORDA_FINA)
     linha += 1
 
-    # 20827
+    # 20827 — correção monetária total
     _escrever_celula(ws, linha, 1, "20827 - ATUAL. MONETÁRIA.", _FONTE_RUB_TITULO,
                      alignment=_ALINH_CENTRO, fill=_FILL_VERDE, border=_BORDA_FINA)
-    if tem_dados:
-        _escrever_celula(ws, linha, 2, f"=SUM(E{linha_ini_reg}:E{linha_fim_13})",
-                         _FONTE_RUB_VALOR, _MOEDA, _ALINH_CENTRO, _FILL_VERDE, _BORDA_FINA)
-    else:
-        _escrever_celula(ws, linha, 2, 0.0, _FONTE_RUB_VALOR, _MOEDA,
-                         _ALINH_CENTRO, _FILL_VERDE, _BORDA_FINA)
+    _escrever_celula(ws, linha, 2, f"=SUM(E{primeiro}:E{ultimo})",
+                     _FONTE_RUB_VALOR, _MOEDA, _ALINH_CENTRO, _FILL_VERDE, _BORDA_FINA)
     linha += 1
 
     # ── Blank entre blocos ──
@@ -302,10 +285,15 @@ def _bloco_beneficiario(ws, linha, r) -> None:
 
 
 def _escrever_linha_dados(ws, linha, p, r, tipo: str) -> None:
-    is_13 = tipo == "decimo_terceiro"
-    desc = (f"DEVOLUÇÃO DA SEGURIDADE SOCIAL 13º SAL - {p.nome} - MATRÍCULA {r.matricula}" if is_13
-            else f"DEVOLUÇÃO DA SEGURIDADE SOCIAL - {p.nome} - MATRÍCULA {r.matricula}")
-    fill = _FILL_AZUL_13 if is_13 else None
+    if tipo == "decimo_terceiro":
+        desc = f"DEVOLUÇÃO DA SEGURIDADE SOCIAL 13º SAL - {p.nome} - MATRÍCULA {r.matricula}"
+        fill = _FILL_AZUL_13
+    elif tipo == "diferenca":
+        desc = f"DIFERENÇA SEGURIDADE SOCIAL - {p.nome} - MATRÍCULA {r.matricula}"
+        fill = None
+    else:
+        desc = f"DEVOLUÇÃO DA SEGURIDADE SOCIAL - {p.nome} - MATRÍCULA {r.matricula}"
+        fill = None
 
     _escrever_celula(ws, linha, 1, p.competencia,
                      _FONTE_DADOS, alignment=_ALINH_CENTRO,

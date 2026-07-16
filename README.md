@@ -1,114 +1,91 @@
 # Atualização Monetária COGEB
 
-Automação do processo de trazer valores a **valor presente** (atualização
-monetária) que hoje a equipe da COGEB faz manualmente na calculadora do
-**TCDF (SINDEC)**:
-<https://www2.tc.df.gov.br/sindec-sistema-de-indices-e-indicadores-economicos-e-de-atualizacao-de-valores/>
+Ferramenta que **corrige valores com IPCA-E** (inflação) e gera uma planilha Excel
+no formato que a COGEB precisa.
 
 ---
 
-## O problema
+## ⚡ Como usar (rápido)
 
-O processo manual é lento e repetitivo:
+### 1. Preencha a planilha de entrada
 
-1. Para cada beneficiário, digitar o valor **mês a mês** no sistema e aplicar
-   a correção mensal (ex.: João recebe R$ 1.500 de janeiro a julho → 7
-   lançamentos manuais).
-2. Exportar o Excel gerado pelo site.
-3. Copiar manualmente as informações do Excel para o modelo/template do projeto.
+Abra `dados/entrada/beneficiarios.csv` no Excel e preencha:
 
-Para uma folha com dezenas de beneficiários e vários meses, isso consome horas.
+| nome | matricula | orgao | valor_mensal | competencia_inicial | competencia_final | data_alvo |
+|------|-----------|-------|-------------|-------------------|-----------------|-----------|
+| MARIA DA SILVA | 123456 | 990 | 0 | 01/2024 | 12/2024 | 30/06/2026 |
 
-## O objetivo
+> Colunas com `;` (ponto e vírgula) separando. `valor_mensal=0` quando o
+> valor real vem da ficha do SIGRH.
 
-Reduzir esse fluxo a: **preencher uma planilha de entrada → rodar → receber a
-saída pronta no formato do nosso modelo.**
+### 2. Dê dois cliques
+
+Duplo-clique em **`Pipeline completo.bat`** e aguarde.
+
+### 3. Pegue o resultado
+
+O arquivo `resultado_AAAA_MM_DD.xlsx` aparece na pasta `dados/saida/`.
 
 ---
 
-## Status atual do projeto
+## 📖 O que a ferramenta faz automaticamente
 
-> **Pipeline completo operacional** — baixa ficha do SIGRH → extrai SEGURIDADE SOCIAL → corrige com IPCA-E → gera Excel COGEB.
+```
+Você preenche o CSV → o programa:
+  1. Entra no SIGRH e baixa a Ficha Financeira de cada pessoa
+  2. Extrai os valores de SEGURIDADE SOCIAL mês a mês
+  3. Aplica o teto máximo de cada ano
+  4. Corrige cada parcela com IPCA-E (inflação)
+  5. Gera o Excel pronto, no formato que a COGEB usa
+```
 
-Ver o roadmap completo em [docs/01-plano.md](docs/01-plano.md).
+---
 
-| Fase | Descrição | Status |
-|------|-----------|--------|
-| 1 | Investigação (como a calculadora funciona por baixo) | ✅ Concluída |
-| 2 | Automação do cálculo | ✅ Concluída |
-| 3 | Saída no formato COGEB | ✅ Concluída |
-| 4 | Interface simples para a equipe | ✅ Concluída |
-| 5 | Pipeline SIGRH → SEGURIDADE → Correção → Excel | ✅ Concluída |
+## 🔧 Instalação (faz uma vez só)
 
-## Como usar (rápido)
+Só precisa fazer isso na primeira vez que for usar:
 
-### Fluxo padrão (valor fixo mensal)
+### 1. Instalar Python
 
-1. Preencha `dados/entrada/beneficiarios.csv`.
-2. Duplo-clique em **`Atualizar valores.bat`**.
-3. Resultado em `dados/saida/resultado.xlsx`.
+1. Baixe o Python 3.12 ou superior em https://www.python.org/downloads/
+2. Na instalação, **marque "Add Python to PATH"**
+3. Abra o PowerShell (tecla Windows + X → "Windows PowerShell")
+4. Digite: `python --version` — deve aparecer "Python 3.12..."
 
-### Fluxo completo (com SEGURIDADE SOCIAL do SIGRH)
-
-**Duplo-clique** em `Pipeline completo.bat` — ele lê `dados/entrada/beneficiarios.csv`
-e gera o Excel em `dados/saida/`.
-
-Ou pelo terminal:
+### 2. Preparar o programa
 
 ```powershell
-python src/main.py --completo dados/entrada/beneficiarios.csv
+cd C:\caminho\ate\a\pasta\atualizacao-monetaria-cogeb
+python -m venv .venv
+.venv\Scripts\python -m pip install -r requirements.txt
+.venv\Scripts\python -m playwright install firefox
 ```
 
-> Credenciais SIGRH lidas do `.env` (matricula_sigrh, senha_sigrh) ou digitadas.
+### 3. Colocar a senha do SIGRH
 
-Se a ficha já foi baixada:
-
-```powershell
-python src/main.py --completo --xls ficha.xls dados/entrada/beneficiarios.csv
-```
-
-Manual completo: [docs/08-manual-uso.md](docs/08-manual-uso.md).
-
-## Como navegar nesta documentação
-
-- **[docs/01-plano.md](docs/01-plano.md)** — plano completo em fases (o "norte" do projeto).
-- **[docs/02-investigacao-tcdf.md](docs/02-investigacao-tcdf.md)** — o que sabemos/precisamos descobrir sobre a calculadora do TCDF. **Comece por aqui na Fase 1.**
-- **[docs/03-captura-network.md](docs/03-captura-network.md)** — passo a passo para capturar a requisição da API no navegador (o que colar de volta aqui).
-- **[docs/04-glossario.md](docs/04-glossario.md)** — termos (atualização monetária, índice, pro-rata, etc.).
-- **[docs/05-decisoes.md](docs/05-decisoes.md)** — registro de decisões técnicas (ADR simplificado).
-- **[docs/06-modelo-entrada.md](docs/06-modelo-entrada.md)** — formato da planilha de entrada.
-- **[docs/07-api-tcdf.md](docs/07-api-tcdf.md)** — contrato da API do SINDEC (endpoints, payloads, gabarito).
-- **[docs/08-manual-uso.md](docs/08-manual-uso.md)** — manual da equipe (como rodar).
-
-## Estrutura de pastas
+Crie um arquivo `.env` na pasta raiz com:
 
 ```
-atualizacao-monetaria-cogeb/
-├─ README.md               <- você está aqui
-├─ Atualizar valores.bat   <- duplo-clique para rodar (equipe)
-├─ requirements.txt        <- dependências Python
-├─ docs/                   <- documentação de suporte
-├─ src/                    <- código
-│  ├─ sindec_api.py        <- cliente da API do TCDF (+ cache)
-│  ├─ calculo.py           <- regras (parcelas mensais, agregação)
-│  ├─ io_planilha.py       <- ler CSV/XLSX, gravar Excel de saída
-│  ├─ main.py              <- ponto de entrada / validação
-│  ├─ Extrator.py          <- automação SIGRH (Playwright)
-│  ├─ Analisador.py        <- extrai SEGURIDADE SOCIAL do .xls do SIGRH
-├─ fichas financeiras/     <- downloads do Extrator.py (gitignored)
-├─ dados/
-│  ├─ entrada/             <- planilha que a equipe preenche
-│  ├─ saida/               <- resultado gerado (resultado.xlsx)
-│  └─ validacao/           <- gabarito + tabela de índices
-└─ testes/                 <- testes automatizados (pytest)
+matricula_sigrh=SUA_MATRICULA_AQUI
+senha_sigrh=SUA_SENHA_AQUI
 ```
 
-## Ambiente
+---
 
-- Windows + PowerShell
-- (A definir na Fase 2) Python 3.x — ver [docs/01-plano.md](docs/01-plano.md).
+## ❓ Problemas comuns
 
-## Uso legítimo
+| Problema | O que fazer |
+|----------|-------------|
+| "Arquivo não encontrado" | Verifique se o CSV existe em `dados/entrada/` |
+| "Falha de conexão" | Confira se a internet está funcionando |
+| SIGRH não abre ou timeout | O programa tenta **3 vezes automaticamente** com 15s de intervalo. Se persistir, o SIGRH pode estar fora do ar |
+| Saiu tudo 0,00 | O `valor_mensal` está 0 mas a ficha não foi baixada (veja a mensagem de erro no terminal) |
+| "pip não é reconhecido" | Reinstale o Python marcando "Add Python to PATH" |
+| Demora muito | Normal para fichas com muitos meses (ex: 4 beneficiários leva ~10 minutos) |
 
-Ferramenta de uso institucional interno da COGEB. As requisições ao site do
-TCDF devem ser feitas em volume razoável, sem sobrecarregar o serviço público.
+---
+
+> **Primeira vez baixando do GitHub?** Veja o guia `docs/09-clonar-github.md`
+> — explica como baixar, instalar e rodar tudo passo a passo.
+>
+> **Precisa de ajuda técnica?** A documentação completa está na pasta `docs/`.
