@@ -90,6 +90,7 @@ def _ler_xlsx(caminho: Path) -> list[dict]:
 # --------------------------------------------------------------------------
 _MOEDA = 'R$ #,##0.00'
 _FATOR = '0.000000'
+_DATA_BR = 'DD/MM/YYYY'
 
 _BRANCO = "FFFFFFFF"
 _PRETO = "FF000000"
@@ -189,13 +190,17 @@ def _escrever_celula(ws, linha, col, valor=None, font=None, number_format=None,
 
 def _bloco_beneficiario(ws, linha, r) -> None:
     # ── NOME / ÓRGÃO ──
-    _escrever_celula(ws, linha, 1, "NOME:", _FONTE_NOME_LABEL, alignment=_ALINH_ESQ,
-                     fill=_FILL_BRANCO, border=_BORDA_FINA)
+    _escrever_celula(ws, linha, 1, "NOME:", _FONTE_NOME_LABEL,
+                     alignment=_ALINH_ESQ, fill=_FILL_BRANCO, border=_BORDA_FINA)
     _escrever_celula(ws, linha, 2, f"{r.nome} - MATRÍCULA {r.matricula}",
                      _FONTE_NOME_VALOR, alignment=_ALINH_CENTRO, border=_BORDA_FINA)
-    _escrever_celula(ws, linha, 3, "ÓRGÃO:", _FONTE_ORGAO_LABEL,
+    _escrever_celula(ws, linha, 3, None, border=_BORDA_FINA)
+    _escrever_celula(ws, linha, 4, None, border=_BORDA_FINA)
+    _escrever_celula(ws, linha, 5, None, border=_BORDA_FINA)
+    ws.merge_cells(start_row=linha, start_column=2, end_row=linha, end_column=5)
+    _escrever_celula(ws, linha, 6, "ÓRGÃO:", _FONTE_ORGAO_LABEL,
                      alignment=_ALINH_CENTRO, fill=_FILL_BRANCO, border=_BORDA_FINA)
-    _escrever_celula(ws, linha, 4, r.orgao, _FONTE_ORGAO_VALOR,
+    _escrever_celula(ws, linha, 7, r.orgao, _FONTE_ORGAO_VALOR,
                      alignment=_ALINH_CENTRO, fill=_FILL_BRANCO, border=_BORDA_FINA)
     linha += 1
 
@@ -296,7 +301,7 @@ def _escrever_linha_dados(ws, linha, p, r, tipo: str) -> None:
         fill = None
 
     _escrever_celula(ws, linha, 1, p.competencia,
-                     _FONTE_DADOS, alignment=_ALINH_CENTRO,
+                     _FONTE_DADOS, _DATA_BR, _ALINH_CENTRO,
                      fill=fill, border=_BORDA_DADOS)
     _escrever_celula(ws, linha, 2, p.valor_original,
                      _FONTE_DADOS, _MOEDA, _ALINH_DIR,
@@ -305,7 +310,7 @@ def _escrever_linha_dados(ws, linha, p, r, tipo: str) -> None:
                      _FONTE_DADOS, alignment=_ALINH_WRAP,
                      fill=fill, border=_BORDA_DADOS)
     _escrever_celula(ws, linha, 4, r.data_alvo,
-                     _FONTE_DADOS, alignment=_ALINH_CENTRO,
+                     _FONTE_DADOS, _DATA_BR, _ALINH_CENTRO,
                      fill=fill, border=_BORDA_DADOS)
     _escrever_celula(ws, linha, 5, p.correcao,
                      _FONTE_DADOS, _MOEDA, _ALINH_DIR,

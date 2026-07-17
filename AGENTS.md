@@ -97,7 +97,7 @@ senha_sigrh=SUA_SENHA_AQUI
 ## Extrator.py (SIGRH automation)
 
 File: `src/Extrator.py` — Playwright script for SIGRH ficha financeira download in **Excel** (HTML table .xls, abre no Excel).
-`run(matr_login, senha, matr_empregado, comp_ini, comp_fim, codigo_empresa="990", pasta_destino="fichas financeiras/", headless=False)`
+`run(matr_login, senha, matr_empregado, comp_ini, comp_fim, codigo_empresa="990", pasta_destino="fichas financeiras/", headless=True)`
 Empresas: 990, 992, 037, 556, 652 (vem da planilha de entrada).
 Uses `playwright` + `python -m playwright install firefox`. Headless=False by default.
 **Mecanismo**: clique no botão EXCEL → popup → SignalR SSE → `#fimdoprocesso` (state=visible) → `context.expect_event("download")` → salva o .xls. Fallback automático para PDF via `#btnPDF` se EXCEL falhar.
