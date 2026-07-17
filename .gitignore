@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.pytest_cache/
+
+# Nenhum Excel ou CSV deve subir (contêm dados reais)
+*.xlsx
+*.xls
+*.csv
+dados/saida/
+dados/validacao/
+fichas financeiras/
+!dados/entrada/_modelo_entrada.csv
+!dados/**/.gitkeep
+
+# Credenciais
+.env
+
+# Protótipos descartáveis (podem conter credenciais)
+codigo_gerado.py
+
+# Sistema
+Thumbs.db
+desktop.ini
+.DS_Store
+
+# Editores
+.vscode/
+.idea/
+AGENTS.md
+CLAUDE.md
