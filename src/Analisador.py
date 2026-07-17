@@ -92,8 +92,14 @@ def parse_xls(caminho: str | Path) -> Dict[int, Dict[str, List[float]]]:
                 extraido = _extrair_valores(linha)
                 if extraido:
                     tipo, valores = extraido
+<<<<<<< HEAD
                     # Sempre sobrescreve — última ocorrência vence
                     anos[ano_atual][tipo] = valores
+=======
+                    # Mantém a primeira ocorrência (primeiro vínculo)
+                    if tipo not in anos[ano_atual]:
+                        anos[ano_atual][tipo] = valores
+>>>>>>> 262d0dbe654a79100d25d7d64f103e3a794e272d
             ano_atual = None
 
     return anos

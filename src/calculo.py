@@ -198,13 +198,18 @@ def gerar_parcelas_13(
 
 
 def _ordenar_ods(parcelas: list[ParcelaCalculada]) -> list[ParcelaCalculada]:
+<<<<<<< HEAD
     """Ordena: mensais por (ano, mês), 13º após dezembro de cada ano."""
+=======
+    """Ordena: mensais (regular + diferenca) cronológico, 13º no final."""
+>>>>>>> 262d0dbe654a79100d25d7d64f103e3a794e272d
     mensais = sorted(
         [p for p in parcelas if p.tipo != "decimo_terceiro"],
         key=lambda p: (p.competencia.year, p.competencia.month),
     )
     dec = sorted(
         [p for p in parcelas if p.tipo == "decimo_terceiro"],
+<<<<<<< HEAD
         key=lambda p: (p.competencia.year, 13),
     )
     result: list[ParcelaCalculada] = []
@@ -217,6 +222,11 @@ def _ordenar_ods(parcelas: list[ParcelaCalculada]) -> list[ParcelaCalculada]:
         if d not in result:
             result.append(d)
     return result
+=======
+        key=lambda p: (p.competencia.year, p.competencia.month),
+    )
+    return mensais + dec
+>>>>>>> 262d0dbe654a79100d25d7d64f103e3a794e272d
 
 
 # --------------------------------------------------------------------------

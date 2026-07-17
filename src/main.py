@@ -105,7 +105,11 @@ def _baixar_ficha(login: str, senha: str, ben, pasta: Path) -> tuple[str | None,
             matricula_login=login, senha_login=senha,
             matricula_empregado=ben.matricula,
             competencia_inicial=ano_ini, competencia_final=ano_fim,
+<<<<<<< HEAD
             codigo_empresa=ben.orgao, pasta_destino=pasta, headless=False,
+=======
+            codigo_empresa=ben.orgao, pasta_destino=pasta,
+>>>>>>> 262d0dbe654a79100d25d7d64f103e3a794e272d
         )
         if ficha_path and not erro:
             return ficha_path, None
