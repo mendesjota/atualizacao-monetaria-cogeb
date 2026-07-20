@@ -11,9 +11,9 @@ no formato que a COGEB precisa.
 
 Abra `dados/entrada/beneficiarios.csv` no Excel e preencha:
 
-| nome | matricula | orgao | valor_mensal | competencia_inicial | competencia_final | data_alvo |
-|------|-----------|-------|-------------|-------------------|-----------------|-----------|
-| MARIA DA SILVA | 123456 | 990 | 0 | 01/2024 | 12/2024 | 30/06/2026 |
+| nome | matricula | orgao | valor_mensal | competencia_inicial | competencia_final | data_alvo | observacao |
+|------|-----------|-------|-------------|-------------------|-----------------|-----------|------------|
+| MARIA DA SILVA | 123456 | 990 | 0 | 01/2024 | 12/2024 | 30/06/2026 | |
 
 > Colunas com `;` (ponto e vírgula) separando. `valor_mensal=0` quando o
 > valor real vem da ficha do SIGRH.

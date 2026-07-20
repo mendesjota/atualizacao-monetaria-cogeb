@@ -1,3 +1,11 @@
+# ⚠️ Documento histórico — não é mais necessário
+
+Este guia foi usado na **Fase 1** para descobrir a API do TCDF.
+A API já está totalmente documentada em `docs/07-api-tcdf.md` e o
+código já a utiliza. Mantido apenas como referência histórica.
+
+---
+
 # Como capturar a requisição da calculadora (aba Network)
 
 Objetivo: descobrir se a calculadora do TCDF usa uma **API** e, se sim,

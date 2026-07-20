@@ -60,6 +60,7 @@ Abra o arquivo no Excel. Cada linha é um beneficiário. As colunas são:
 | `competencia_inicial` | Mês/ano do **primeiro** mês | 01/2024 |
 | `competencia_final` | Mês/ano do **último** mês | 12/2024 |
 | `data_alvo` | Data de referência do cálculo | 30/06/2026 |
+| `observacao` | (Opcional) texto livre | Revisão de julho |
 
 > **Datas:** você pode escrever de vários jeitos:
 > - `01/2024` = janeiro de 2024
@@ -122,11 +123,13 @@ Senha de Login: (digite sua senha — não aparece na tela)
 
 ### 3.3 Se a ficha já foi baixada antes
 
-Se o SIGRH estiver fora do ar, mas você tem a ficha salva:
+Se o SIGRH estiver fora do ar, mas você tem a ficha salva, use o terminal:
 
 ```
-Pipeline completo.bat --xls "caminho/da/ficha.xls"
+.venv\Scripts\python src/main.py --completo --xls "caminho/da/ficha.xls" dados/entrada/beneficiarios.csv
 ```
+
+> ⚠️ O `--xls` só funciona na linha de comando do terminal (PowerShell), não no `Pipeline completo.bat`.
 
 ---
 
@@ -158,6 +161,10 @@ RUBRICA                    | VALOR
 - **30920**: soma de todos os valores mensais de seguridade social
 - **30923**: soma do 13º salário
 - **20827**: soma de toda a correção (atualização monetária)
+
+> **Rubrica 50920 — Diferença de SEGURIDADE SOCIAL:** se a ficha tiver valores
+> de diferença (código 50920), eles aparecem como linhas separadas na tabela,
+> com a descrição "DIFERENÇA SEGURIDADE SOCIAL". O valor entra na rubrica 30920.
 
 ---
 

@@ -471,7 +471,7 @@ atualizacao-monetaria-cogeb/
 |----------|---------------|
 | `valor_mensal = 0` no CSV (buscar do SIGRH) | `Pipeline completo.bat` |
 | `valor_mensal = 1500,00` (valor fixo, não precisa do SIGRH) | Qualquer um |
-| SIGRH fora do ar, mas tenho a ficha salva | `Pipeline completo.bat --xls "ficha.xls"` |
+| SIGRH fora do ar, mas tenho a ficha salva | Use o terminal: `.venv\Scripts\python src/main.py --completo --xls "ficha.xls" dados/entrada/beneficiarios.csv` |
 
 > ⚠️ **Importante:** o `Pipeline completo.bat` depende do arquivo
 > `.env` com sua matrícula e senha do SIGRH. Se não criou o `.env`,

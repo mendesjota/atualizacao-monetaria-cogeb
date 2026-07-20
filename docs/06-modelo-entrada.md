@@ -27,6 +27,7 @@ Cada linha = um beneficiário. As colunas são separadas por `;` (ponto e vírgu
 | `competencia_inicial` | Mês/ano da **primeira** parcela | 02/2025 |
 | `competencia_final` | Mês/ano da **última** parcela | 09/2025 |
 | `data_alvo` | Data para onde corrigir | 02/02/2026 |
+| `observacao` | (Opcional) texto livre | Revisão de julho |
 
 ### valor_mensal = 0
 
@@ -55,30 +56,36 @@ Abreviaturas: jan, fev, mar, abr, mai, jun, jul, ago, set, out, nov, dez
 ### Um beneficiário, período único
 
 ```
-nome;matricula;orgao;valor_mensal;competencia_inicial;competencia_final;data_alvo
-LEVI BATISTA DA SILVA;00812188;652;0;02/2025;09/2025;02/02/2026
+nome;matricula;orgao;valor_mensal;competencia_inicial;competencia_final;data_alvo;observacao
+LEVI BATISTA DA SILVA;00812188;652;0;02/2025;09/2025;02/02/2026;
 ```
 
 ### Vários beneficiários
 
 ```
-nome;matricula;orgao;valor_mensal;competencia_inicial;competencia_final;data_alvo
-OLGA ANDRADE ABRAHAO;17151538;990;0;08/2023;09/2025;06/01/2026
-ANTONIO GOMES DA SILVA;16502711;990;0;05/2023;04/2025;06/01/2026
-DIMAS GARCIA DE OLIVEIRA;0093383X;990;0;01/2023;01/2026;06/01/2026
+nome;matricula;orgao;valor_mensal;competencia_inicial;competencia_final;data_alvo;observacao
+OLGA ANDRADE ABRAHAO;17151538;990;0;08/2023;09/2025;06/01/2026;
+ANTONIO GOMES DA SILVA;16502711;990;0;05/2023;04/2025;06/01/2026;
+DIMAS GARCIA DE OLIVEIRA;0093383X;990;0;01/2023;01/2026;06/01/2026;
 ```
 
 ### Mesma pessoa com períodos diferentes
 
 ```
-ANTONIO GOMES DA SILVA;16502711;990;0;01/2024;06/2024;30/06/2026
-ANTONIO GOMES DA SILVA;16502711;990;0;07/2024;12/2024;30/06/2026
+ANTONIO GOMES DA SILVA;16502711;990;0;01/2024;06/2024;30/06/2026;
+ANTONIO GOMES DA SILVA;16502711;990;0;07/2024;12/2024;30/06/2026;
 ```
 
 ### Valor fixo (sem buscar do SIGRH)
 
 ```
-MARIA JOSE;123456;990;1500,00;01/2025;06/2025;30/06/2026
+MARIA JOSE;123456;990;1500,00;01/2025;06/2025;30/06/2026;
+```
+
+### Com observação
+
+```
+JOAO DE SOUZA;789012;990;0;01/2024;12/2024;30/06/2026;Revisão de benefício
 ```
 
 ---
@@ -89,3 +96,4 @@ MARIA JOSE;123456;990;1500,00;01/2025;06/2025;30/06/2026
 - **Separador `;`** — padrão do Excel brasileiro
 - **Não pule linhas** — se uma linha estiver vazia, o programa para de ler
 - **Não mude os nomes das colunas** — o programa procura por eles
+- **Coluna `observacao` é opcional** — pode ficar vazia ou nem existir que o programa funciona

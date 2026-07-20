@@ -135,8 +135,6 @@ necessários** para obter o valor corrigido.
 | Correção monetária | **R$ 72,60** |
 | **Valor corrigido** | **R$ 1.572,60** |
 
-Arquivo: [`dados/validacao/gabarito_1500_jan24_jul25.json`](../dados/validacao/gabarito_1500_jan24_jul25.json).
-
 ---
 
 ## INPC vs IPCA-E — ESCLARECIDO (revisado 2026-07-06)

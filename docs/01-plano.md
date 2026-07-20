@@ -59,7 +59,7 @@ comando.
 
 - [x] `Analisador.py` — extrai 40920 SEGURIDADE SOCIAL + 40923 (13º) do .xls do SIGRH
 - [x] Aplica teto máximo de contribuição por ano (cap)
-- [x] Usa **última ocorrência** de cada código por ano (segundo vínculo)
+- [x] Usa **primeira ocorrência** de cada código por ano (primeiro vínculo prevalece)
 - [x] `parse_competencia` aceita mês abreviado PT-BR (`ago/23`, `set/25`)
 - [x] `processar_beneficiario_com_analise()` em `calculo.py` — cria parcelas com valores reais
 - [x] `main.py --completo` — pipeline completo em um comando

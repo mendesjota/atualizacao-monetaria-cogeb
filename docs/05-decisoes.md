@@ -32,7 +32,29 @@ Formato: **Data — Decisão — Motivo — Status**
 - **DECISÃO:** **Abordagem A** — usar `POST /calcular`. Confirmado pela COGEB
   em 2026-07-02: o valor que copiam hoje é R$ 1.572,60 (INPC), idêntico ao da
   API. É a opção mais simples e que bate 100% com o site.
+- **Status:** ⬆️ **Substituído pelo ADR-008** (cálculo atual usa IPCA-E, não INPC).
+
+---
+
+## ADR-003 — Linguagem/stack
+
+- **Data:** 2026-07-02
+- **Decisão:** **Python 3.12** + `requests` (HTTP) + `openpyxl` (Excel).
+  Dispensamos pandas para manter leve. Testes com `pytest`.
+- **Motivo:** Ecossistema forte para Excel e HTTP; leve; roda bem no Windows.
 - **Status:** ✅ Aceito.
+
+---
+
+## ADR-004 — Parâmetros do cálculo (confirmados pela COGEB)
+
+- **Data:** 2026-07-02
+- **Decisão (revisada em ADR-005):**
+  - Índice oficial: ~~IPCA-E~~ → **INPC** (ver ADR-005; era imprecisão).
+  - **Sem juros de mora** — apenas correção monetária pura (mantido).
+  - Entrada de dados via **planilha Excel/CSV** (a equipe preenche, o script consome).
+- **Motivo:** Confirmado pelo usuário.
+- **Status:** ✅ Aceito (sem juros mantido; índice posteriormente substituído pelo ADR-008).
 
 ---
 
@@ -44,7 +66,7 @@ Formato: **Data — Decisão — Motivo — Status**
   valor conferido no site (R$ 1.572,60) é o do INPC. "IPCA-E" foi imprecisão de
   nomenclatura. A tabela IPCA-E (`GET /ipcae`) fica guardada como referência,
   mas não é usada no cálculo.
-- **Status:** ✅ Resolvido.
+- **Status:** ⬆️ **Substituído pelo ADR-008** (cálculo atual usa IPCA-E mensal).
 
 ---
 
@@ -63,29 +85,7 @@ Formato: **Data — Decisão — Motivo — Status**
   3. Calcula `fator = correção / valor_original` por parcela
 - **Cache:** apenas as taxas anuais são cacheadas (chave = ano).
 - **Motivo:** Reproduz a variação mensal observada no modelo de saída da COGEB.
-- **Status:** ✅ Aceito (substituído pelo ADR-008 — IPCA-E mensal).
-
----
-
-## ADR-004 — Parâmetros do cálculo (confirmados pela COGEB)
-
-- **Data:** 2026-07-02
-- **Decisão (revisada em ADR-005):**
-  - Índice oficial: ~~IPCA-E~~ → **INPC** (ver ADR-005; era imprecisão).
-  - **Sem juros de mora** — apenas correção monetária pura (mantido).
-  - Entrada de dados via **planilha Excel/CSV** (a equipe preenche, o script consome).
-- **Motivo:** Confirmado pelo usuário.
-- **Status:** ✅ Aceito (índice corrigido em ADR-005).
-
----
-
-## ADR-003 — Linguagem/stack
-
-- **Data:** 2026-07-02
-- **Decisão:** **Python 3.12** + `requests` (HTTP) + `openpyxl` (Excel).
-  Dispensamos pandas para manter leve. Testes com `pytest`.
-- **Motivo:** Ecossistema forte para Excel e HTTP; leve; roda bem no Windows.
-- **Status:** ✅ Aceito.
+- **Status:** ⬆️ **Substituído pelo ADR-008** (IPCA-E mensal composto).
 
 ---
 
@@ -103,7 +103,7 @@ Formato: **Data — Decisão — Motivo — Status**
   3. Anos sem dado disponível (futuros) recebem taxa 0
 - **Cache:** as taxas anuais são cacheadas normalmente pelo `SindecClient`
 - **Motivo:** Gera fatores que variam por competência, como esperado pela COGEB.
-- **Status:** ✅ Substituído pelo ADR-008 (IPCA-E mensal composto).
+- **Status:** ⬆️ **Substituído pelo ADR-008** (IPCA-E mensal composto).
 
 ---
 
@@ -119,4 +119,19 @@ Formato: **Data — Decisão — Motivo — Status**
   4. O método `SindecClient.obter_taxas_mensais_ipcae()` substitui `SindecClient.obter_taxas_anuais()`
 - **Motivo:** Única forma de reproduzir exatamente os fatores do site do TCDF.
 - **Impacto:** O gabarito anterior (R$ 1.500, Jan/2024→Jul/2025 = R$ 1.572,60) era INPC e **não** se aplica mais. A validação em `main.py` agora apenas verifica se a série IPCA-E está disponível.
-- **Status:** ✅ Aceito.
+- **Status:** ✅ Aceito (decisão vigente — cálculo com IPCA-E mensal).
+
+---
+
+## Resumo da linha do tempo
+
+```
+ADR-001 (02/jul) → Estrutura do projeto em fases
+ADR-002 (02/jul) → Escolha do POST /calcular (INPC)  ⬆️ substituído
+ADR-003 (02/jul) → Stack: Python + requests + openpyxl
+ADR-004 (02/jul) → Parâmetros: sem juros, entrada CSV
+ADR-005 (02/jul) → Confirmação: índice INPC  ⬆️ substituído
+ADR-006 (02/jul) → Regra de recorrência mensal  ⬆️ substituído
+ADR-007 (06/jul) → Pro-rata mensal das taxas INPC  ⬆️ substituído
+ADR-008 (06/jul) → ✅ **IPCA-E mensal composto** (decisão vigente)
+```

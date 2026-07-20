@@ -63,7 +63,26 @@ o SIGRH identifica essa rubrica.
 ### 13º salário (código 40923)
 
 A parcela do 13º salário que também aparece na Ficha Financeira, com
-código próprio (40923).
+código próprio (40923). Pode ser paga em um mês específico (ex.: novembro)
+ou dividida em dois meses.
+
+### Diferença de SEGURIDADE SOCIAL (código 50920)
+
+Valor complementar de SEGURIDADE SOCIAL que aparece na Ficha Financeira
+em meses específicos. É extraído separadamente e entra no cálculo como
+uma parcela extra no mês em que foi paga.
+
+### Pipeline completo (`--completo`)
+
+Modo de execução que faz **tudo de uma vez**: baixa a ficha do SIGRH,
+extrai os valores de SEGURIDADE SOCIAL, corrige com IPCA-E e gera o
+Excel. Ativado com a flag `--completo` no terminal.
+
+### Ambiente virtual (`.venv`)
+
+Pasta criada pelo Python que contém uma cópia isolada do Python com
+as bibliotecas do projeto. Todos os comandos devem usar
+`.venv\Scripts\python` em vez de `python` puro.
 
 ### CSV
 

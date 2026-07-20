@@ -30,8 +30,8 @@ td[13] = Total anual (soma dos 12 meses)
 ```
 
 Alguns empregados possuem **múltiplos vínculos** no mesmo período, resultando em
-duas ocorrências de 40920 por ano. O `Analisador.py` usa **a última ocorrência**
-de cada ano (a de maior valor, que representa o vínculo real).
+duas ocorrências de 40920 por ano. O `Analisador.py` usa **a primeira ocorrência**
+de cada ano (primeiro vínculo).
 
 ## Teto máximo (teto de contribuição)
 
@@ -54,8 +54,8 @@ Regra: `valor_final = min(valor_40920, teto_ano)`
 ### Linha de comando
 
 ```powershell
-python src/Analisador.py <caminho.xls> <data_inicio> <data_fim>
-python src/Analisador.py <caminho.xls> --csv dados/entrada/beneficiarios.csv
+.venv\Scripts\python src/Analisador.py <caminho.xls> <data_inicio> <data_fim>
+.venv\Scripts\python src/Analisador.py <caminho.xls> --csv dados/entrada/beneficiarios.csv
 ```
 
 Datas no formato `MM/AAAA`, `MM-AAAA`, `ago/23` (mês abreviado PT-BR + 2 dígitos ano).
@@ -63,7 +63,7 @@ Datas no formato `MM/AAAA`, `MM-AAAA`, `ago/23` (mês abreviado PT-BR + 2 dígit
 ### Exemplo
 
 ```powershell
-python src/Analisador.py "fichas financeiras/FICHA-FIN-05320908-990-2023-2025-xxxx.xls" 08/2023 09/2025
+.venv\Scripts\python src/Analisador.py "fichas financeiras/FICHA-FIN-05320908-990-2023-2025-xxxx.xls" 08/2023 09/2025
 ```
 
 Saída (CSV):
@@ -90,13 +90,13 @@ for row in resultado:
 Para usar o pipeline completo (baixar → extrair → corrigir → Excel), execute:
 
 ```powershell
-python src/main.py --completo dados/entrada/beneficiarios.csv saida.xlsx
+.venv\Scripts\python src/main.py --completo dados/entrada/beneficiarios.csv saida.xlsx
 ```
 
 Ou com uma ficha já baixada:
 
 ```powershell
-python src/main.py --completo --xls ficha.xls dados/entrada/beneficiarios.csv saida.xlsx
+.venv\Scripts\python src/main.py --completo --xls ficha.xls dados/entrada/beneficiarios.csv saida.xlsx
 ```
 
 ## Validação
@@ -112,4 +112,4 @@ produz os seguintes valores mensais (já com teto aplicado):
 | 13º 2023    | R$ 1.350,02         | R$ 1.481,81     |
 | 13º 2024    | R$ 1.791,18         | R$ 1.876,54     |
 
-Total: **R$ 53.173,00** — validado contra `dados/saida/modelo de saida.xlsx`.
+Total: **R$ 53.173,00**.
