@@ -85,6 +85,9 @@ senha_sigrh=SUA_SENHA_AQUI
 
 ---
 
+**Quer entender todos os comandos disponíveis?** Veja `docs/11-comandos-terminal.md`
+— explica cada modo de executar, com o significado de cada argumento.
+
 > **Primeira vez baixando do GitHub?** Veja o guia `docs/09-clonar-github.md`
 > — explica como baixar, instalar e rodar tudo passo a passo.
 >
