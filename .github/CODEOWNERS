@@ -1,0 +1,5 @@
+# Dono dos arquivos Python — apenas mendesjota aprova alterações
+*.py @mendesjota
+
+# Demais arquivos — ambos podem (ou ajuste como preferir)
+* @mendesjota @diixbhiia04-beep
