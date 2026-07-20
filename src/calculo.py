@@ -268,13 +268,13 @@ def processar_beneficiario_com_analise(
 
     parcelas: list[ParcelaCalculada] = []
     for row in analise:
-        comp_str: str = row["competencia"]  # "2023-08" ou "2023-13"
+        comp_str: str = row["competencia"]  # "2023-08"
         valor_final: float = row["valor_final"]
         origem: str = row.get("origem", "40920")
 
-        if comp_str.endswith("-13"):
-            ano = int(comp_str[:4])
-            comp = date(ano, 12, 1)
+        if origem == "40923":
+            ano_s, mes_s = comp_str.split("-")
+            comp = date(int(ano_s), int(mes_s), 1)
             tipo: Literal["regular", "decimo_terceiro", "diferenca"] = "decimo_terceiro"
         elif origem == "50920":
             ano_s, mes_s = comp_str.split("-")

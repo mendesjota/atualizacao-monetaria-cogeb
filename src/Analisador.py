@@ -177,21 +177,20 @@ def gerar_matriz_mensal(
                 _emitir_entrada(competencia, dif_original, dif_final, teto, "50920")
             )
 
+        # 13º salário (40923) — no mês real de pagamento
+        if vals_dec and mes <= len(vals_dec) and vals_dec[mes - 1] != 0:
+            dec_val = vals_dec[mes - 1]
+            dec_final = min(dec_val, teto) if teto else dec_val
+            resultado.append({
+                "competencia": f"{ano:04d}-{mes:02d}",
+                "valor_seg_social": dec_val,
+                "teto_ano": teto,
+                "valor_final": dec_final,
+                "origem": "40923",
+            })
+
         mes += 1
         if mes > 12:
-            # Incluir 13º salário do ano que terminou
-            if vals_dec:
-                dec_val = sum(vals_dec)
-                dec_final = dec_val
-                if teto:
-                    dec_final = min(dec_val, teto)
-                resultado.append({
-                    "competencia": f"{ano:04d}-13",
-                    "valor_seg_social": dec_val,
-                    "teto_ano": teto,
-                    "valor_final": dec_final,
-                    "origem": "40923",
-                })
             mes = 1
             ano += 1
 
