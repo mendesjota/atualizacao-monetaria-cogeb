@@ -251,28 +251,31 @@ def _bloco_beneficiario(ws, linha, r) -> None:
                      alignment=_ALINH_CENTRO, border=_BORDA_FINA)
     linha += 1
 
+    # Pré-calcula valores das rubricas a partir das parcelas
+    sum_regular = round(sum(p.valor_corrigido for p in r.parcelas if p.tipo != "decimo_terceiro"), 2)
+    sum_decimo = round(sum(p.valor_corrigido for p in r.parcelas if p.tipo == "decimo_terceiro"), 2)
+    sum_correcao = round(sum(p.correcao for p in r.parcelas), 2)
+
     # 30920 — regular + diferença (exclui 13º)
     _escrever_celula(ws, linha, 1, "30920 - SEGURIDADE SOCIAL", _FONTE_RUB_TITULO,
                      alignment=_ALINH_CENTRO, fill=_FILL_VERDE, border=_BORDA_FINA)
-    _escrever_celula(ws, linha, 2,
-                     f'=SUMIFS(B{linha_ini}:B{linha_fim_tudo};C{linha_ini}:C{linha_fim_tudo};"<>*13º SAL*")',
+    _escrever_celula(ws, linha, 2, sum_regular,
                      _FONTE_RUB_VALOR, _MOEDA, _ALINH_CENTRO, _FILL_VERDE, _BORDA_FINA)
     _escrever_celula(ws, linha, 3, mes_alvo, _FONTE_RUB_TITULO,
                      alignment=_ALINH_CENTRO, border=_BORDA_FINA)
     linha += 1
 
-    # 30923 — 13º salário (soma condicional pela descrição)
+    # 30923 — 13º salário
     _escrever_celula(ws, linha, 1, "30923 - SEG. SOC. - 13º SAL.", _FONTE_RUB_TITULO,
                      alignment=_ALINH_CENTRO, fill=_FILL_VERDE, border=_BORDA_FINA)
-    _escrever_celula(ws, linha, 2,
-                     f'=SUMIFS(B{primeiro}:B{ultimo};C{primeiro}:C{ultimo};"*13º SAL*")',
+    _escrever_celula(ws, linha, 2, sum_decimo,
                      _FONTE_RUB_VALOR, _MOEDA, _ALINH_CENTRO, _FILL_VERDE, _BORDA_FINA)
     linha += 1
 
     # 20827 — correção monetária total
     _escrever_celula(ws, linha, 1, "20827 - ATUAL. MONETÁRIA.", _FONTE_RUB_TITULO,
                      alignment=_ALINH_CENTRO, fill=_FILL_VERDE, border=_BORDA_FINA)
-    _escrever_celula(ws, linha, 2, f"=SUM(E{primeiro}:E{ultimo})",
+    _escrever_celula(ws, linha, 2, sum_correcao,
                      _FONTE_RUB_VALOR, _MOEDA, _ALINH_CENTRO, _FILL_VERDE, _BORDA_FINA)
     linha += 1
 

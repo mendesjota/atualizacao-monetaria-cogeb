@@ -93,8 +93,7 @@ def parse_xls(
             continue
 
         if ano_atual is not None:
-            # Pula se a seção pertence a outro vínculo
-            if matricula and matricula_atual and matricula_atual != matricula:
+            if matricula and matricula_atual and matricula_atual.lstrip("0") != matricula.lstrip("0"):
                 ano_atual = None
                 matricula_atual = ""
                 continue
