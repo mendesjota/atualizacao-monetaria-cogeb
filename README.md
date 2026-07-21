@@ -20,7 +20,7 @@ Abra `dados/entrada/beneficiarios.csv` no Excel e preencha:
 
 ### 2. Dê dois cliques
 
-Duplo-clique em **`Pipeline completo.bat`** e aguarde.
+Duplo-clique em **`1 - Pipeline completo (COM SIGRH).bat`** e aguarde.
 
 ### 3. Pegue o resultado
 

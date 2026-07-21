@@ -66,7 +66,7 @@ atualizacao-monetaria-cogeb/
 │   └── saida/            ← o resultado aparece aqui
 ├── src/                  ← programas (não mexa)
 ├── docs/                 ← manuais
-├── Pipeline completo.bat ← clique aqui para rodar
+├── 1 - Pipeline completo (COM SIGRH).bat ← clique aqui para rodar
 ├── requirements.txt      ← lista de peças necessárias
 └── .env                  ← sua senha do SIGRH (você vai criar)
 ```
@@ -172,7 +172,7 @@ toda vez que você rodar (a senha não aparece na tela enquanto digita).
 
 ## 6. Rodar o programa
 
-1. Dê **dois cliques** no arquivo **`Pipeline completo.bat`**
+1. Dê **dois cliques** no arquivo **`1 - Pipeline completo (COM SIGRH).bat`**
 2. Uma janela preta (terminal) vai abrir
 3. O programa vai:
    - Verificar a conexão com o site do IPCA-E
@@ -237,7 +237,7 @@ Se você escolheu "Clonar com Git" e não tem conta no GitHub:
 | 2 | Instalar Python (marcar "Add to PATH") |
 | 3 | Abrir PowerShell na pasta e digitar os 3 comandos |
 | 4 | Criar o arquivo `.env` com matrícula e senha |
-| 5 | Dar duplo-clique em `Pipeline completo.bat` |
+| 5 | Dar duplo-clique em `1 - Pipeline completo (COM SIGRH).bat` |
 
 > **Ainda com dúvida?** Peça ajuda para a equipe técnica da COGEB.
 > Mande uma foto da tela que eles ajudam.

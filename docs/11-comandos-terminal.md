@@ -446,16 +446,16 @@ Na pasta raiz do projeto:
 
 ```
 atualizacao-monetaria-cogeb/
-├── Pipeline completo.bat   ← CLIQUE AQUI para fazer TUDO
-├── Atualizar valores.bat   ← CLIQUE AQUI para só corrigir (sem SIGRH)
+├── 1 - Pipeline completo (COM SIGRH).bat   ← CLIQUE AQUI para fazer TUDO
+├── 2 - Atualizar valores (SEM SIGRH).bat   ← CLIQUE AQUI para só corrigir (sem SIGRH)
 ```
 
 ### O que cada um faz
 
 | Arquivo | O que faz |
 |---------|-----------|
-| `Pipeline completo.bat` | Baixa ficha do SIGRH → extrai SEGURIDADE → corrige → Excel |
-| `Atualizar valores.bat` | Só corrige (SEM SIGRH). Precisa do valor preenchido no CSV |
+| `1 - Pipeline completo (COM SIGRH).bat` | Baixa ficha do SIGRH → extrai SEGURIDADE → corrige → Excel |
+| `2 - Atualizar valores (SEM SIGRH).bat` | Só corrige (SEM SIGRH). Precisa do valor preenchido no CSV |
 
 ### Como usar
 
@@ -469,11 +469,11 @@ atualizacao-monetaria-cogeb/
 
 | Situação | Qual bat usar |
 |----------|---------------|
-| `valor_mensal = 0` no CSV (buscar do SIGRH) | `Pipeline completo.bat` |
+| `valor_mensal = 0` no CSV (buscar do SIGRH) | `1 - Pipeline completo (COM SIGRH).bat` |
 | `valor_mensal = 1500,00` (valor fixo, não precisa do SIGRH) | Qualquer um |
 | SIGRH fora do ar, mas tenho a ficha salva | Use o terminal: `.venv\Scripts\python src/main.py --completo --xls "ficha.xls" dados/entrada/beneficiarios.csv` |
 
-> ⚠️ **Importante:** o `Pipeline completo.bat` depende do arquivo
+> ⚠️ **Importante:** o `1 - Pipeline completo (COM SIGRH).bat` depende do arquivo
 > `.env` com sua matrícula e senha do SIGRH. Se não criou o `.env`,
 > o programa vai pedir a senha na tela.
 
@@ -490,7 +490,7 @@ atualizacao-monetaria-cogeb/
 | **Baixar uma ficha avulsa** | `.venv\Scripts\python src/Extrator.py` |
 | **Ver os valores de uma ficha** | `.venv\Scripts\python src/Analisador.py "ficha.xls" 08/2023 09/2025` |
 | **Testar se o código está certo** | `.venv\Scripts\python -m pytest testes\ -v` |
-| **Não quero digitar nada** | Duplo-clique em `Pipeline completo.bat` |
+| **Não quero digitar nada** | Duplo-clique em `1 - Pipeline completo (COM SIGRH).bat` |
 
 ---
 

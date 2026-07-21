@@ -31,7 +31,7 @@ atualizacao-monetaria-cogeb/
 ├─ dados/
 │  ├─ entrada/           ← VOCÊ COLA O ARQUIVO AQUI
 │  └─ saida/             ← O RESULTADO SAI AQUI
-├─ Pipeline completo.bat ← CLIQUE AQUI PARA RODAR
+├─ 1 - Pipeline completo (COM SIGRH).bat ← CLIQUE AQUI PARA RODAR
 ├─ src/                  ← programas (não mexa)
 └─ docs/                 ← manuais (você está aqui)
 ```
@@ -97,7 +97,7 @@ DIMAS GARCIA DE OLIVEIRA;0093383X;990;0;01/2023;01/2026;06/01/2026
 
 ### 3.1 Jeito mais fácil (duplo-clique)
 
-1. Dê **dois cliques** no arquivo **`Pipeline completo.bat`**
+1. Dê **dois cliques** no arquivo **`1 - Pipeline completo (COM SIGRH).bat`**
 2. Uma janela preta (terminal) vai abrir
 3. O programa vai:
    - Pedir sua senha do SIGRH (se não estiver no `.env`)
@@ -129,7 +129,7 @@ Se o SIGRH estiver fora do ar, mas você tem a ficha salva, use o terminal:
 .venv\Scripts\python src/main.py --completo --xls "caminho/da/ficha.xls" dados/entrada/beneficiarios.csv
 ```
 
-> ⚠️ O `--xls` só funciona na linha de comando do terminal (PowerShell), não no `Pipeline completo.bat`.
+> ⚠️ O `--xls` só funciona na linha de comando do terminal (PowerShell), não no `1 - Pipeline completo (COM SIGRH).bat`.
 
 ---
 
@@ -205,7 +205,7 @@ matricula_sigrh=SUA_MATRICULA_AQUI
 senha_sigrh=SUA_SENHA_AQUI
 ```
 
-### Pronto! Agora é só usar o `Pipeline completo.bat`.
+### Pronto! Agora é só usar o `1 - Pipeline completo (COM SIGRH).bat`.
 
 > **Dica:** Se preferir não salvar a senha, pode digitar toda vez que rodar.
 
