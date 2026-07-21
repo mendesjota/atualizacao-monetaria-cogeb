@@ -115,6 +115,27 @@ def _baixar_ficha(login: str, senha: str, ben, pasta: Path) -> tuple[str | None,
     return None, erro
 
 
+CHECKPOINT_FILE = RAIZ / "dados" / "validacao" / "checkpoint_completo.json"
+
+
+def _carregar_checkpoint() -> dict[str, dict]:
+    """Carrega checkpoint: { 'matricula|orgao': { 'nome', 'qtd_parcelas', 'total_corrigido' } }"""
+    if CHECKPOINT_FILE.exists():
+        import json
+        with open(CHECKPOINT_FILE, encoding="utf-8") as f:
+            return json.load(f)
+    return {}
+
+
+def _salvar_checkpoint(dados: dict) -> None:
+    import json
+    CHECKPOINT_FILE.parent.mkdir(parents=True, exist_ok=True)
+    tmp = CHECKPOINT_FILE.with_suffix(".tmp")
+    with open(tmp, "w", encoding="utf-8") as f:
+        json.dump(dados, f, ensure_ascii=False, indent=2)
+    tmp.replace(CHECKPOINT_FILE)
+
+
 def main_completo(entrada: Path, saida: Path, xls_path: Path = None) -> int:
     from Analisador import analisar
 
@@ -133,8 +154,26 @@ def main_completo(entrada: Path, saida: Path, xls_path: Path = None) -> int:
         beneficiarios = ler_entrada(entrada)
         print(f"  {len(beneficiarios)} beneficiário(s).")
 
+        checkpoint = _carregar_checkpoint()
+        if checkpoint:
+            print(f"  Checkpoint: {len(checkpoint)} já processados.")
+
         resumos = []
         for i, ben in enumerate(beneficiarios, start=1):
+            chk_id = f"{ben.matricula}|{ben.orgao}"
+            if chk_id in checkpoint:
+                print(f"\n[{i}/{len(beneficiarios)}] {ben.nome} — mat {ben.matricula} (checkpoint)")
+                cp = checkpoint[chk_id]
+                from calculo import ResumoBeneficiario
+                resumos.append(ResumoBeneficiario(
+                    nome=cp["nome"], matricula=ben.matricula, orgao=ben.orgao,
+                    qtd_parcelas=cp["qtd_parcelas"], total_corrigido=cp["total_corrigido"],
+                    total_original=cp.get("total_original", 0),
+                    total_correcao=cp.get("total_correcao", 0),
+                    data_alvo=ben.data_alvo,
+                ))
+                continue
+
             print(f"\n[{i}/{len(beneficiarios)}] {ben.nome} — matrícula {ben.matricula}")
 
             data_ini = f"{ben.competencia_inicial.month:02d}/{ben.competencia_inicial.year}"
@@ -153,13 +192,27 @@ def main_completo(entrada: Path, saida: Path, xls_path: Path = None) -> int:
 
             # 2. Extrair SEGURIDADE SOCIAL
             print(f"  Analisando SEGURIDADE SOCIAL ({data_ini} a {data_fim})...")
-            analise = analisar(ficha_path, data_ini, data_fim)
+            analise = analisar(ficha_path, data_ini, data_fim, ben.matricula)
             print(f"  {len(analise)} parcelas extraídas.")
 
             # 3. Corrigir com IPCA-E
             print(f"  Corrigindo com IPCA-E...")
             resumo = processar_beneficiario_com_analise(ben, analise, client)
             resumos.append(resumo)
+
+            # Checkpoint incremental
+            checkpoint[chk_id] = {
+                "nome": resumo.nome,
+                "qtd_parcelas": resumo.qtd_parcelas,
+                "total_original": resumo.total_original,
+                "total_correcao": resumo.total_correcao,
+                "total_corrigido": resumo.total_corrigido,
+            }
+            if i % 10 == 0:
+                _salvar_checkpoint(checkpoint)
+                print(f"  💾 Checkpoint salvo ({len(checkpoint)} processados)")
+
+        _salvar_checkpoint(checkpoint)
 
     if not resumos:
         print("✖ Nenhum beneficiário processado com sucesso.")

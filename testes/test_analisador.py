@@ -82,7 +82,7 @@ def test_regular_com_teto():
 
 
 def test_decimo_unico_mes():
-    """40923 em novembro gera entrada de 13º em novembro, não em dezembro."""
+    """40923 em novembro gera entrada de 13º em dezembro (ODS usa dezembro)."""
     reg = [1500.0] * 12
     dec = [0.0] * 12
     dec[10] = 1747.69  # novembro
@@ -94,12 +94,12 @@ def test_decimo_unico_mes():
 
     dec_entries = [r for r in resultado if r["origem"] == "40923"]
     assert len(dec_entries) == 1
-    assert dec_entries[0]["competencia"] == "2024-11"
+    assert dec_entries[0]["competencia"] == "2024-12"
     assert dec_entries[0]["valor_final"] == 1747.69
 
 
 def test_decimo_dividido_dois_meses():
-    """40923 dividido em março e novembro gera 2 entradas de 13º."""
+    """40923 dividido em março e novembro gera 1 entrada em dezembro (rateio no primeiro ano)."""
     reg = [1500.0] * 12
     dec = [0.0] * 12
     dec[2] = 800.00   # março
@@ -108,11 +108,9 @@ def test_decimo_dividido_dois_meses():
     resultado = gerar_matriz_mensal(entrada, "01/2024", "12/2024")
 
     dec_entries = [r for r in resultado if r["origem"] == "40923"]
-    assert len(dec_entries) == 2
-    assert dec_entries[0]["competencia"] == "2024-03"
+    assert len(dec_entries) == 1
+    assert dec_entries[0]["competencia"] == "2024-12"
     assert dec_entries[0]["valor_final"] == 800.00
-    assert dec_entries[1]["competencia"] == "2024-11"
-    assert dec_entries[1]["valor_final"] == 947.69
 
 
 def test_decimo_valor_zero_ignorado():
@@ -177,7 +175,7 @@ def test_diferenca_valor_zero_ignorado():
 
 
 def test_combinado_tres_tipos():
-    """40920 + 40923 + 50920 no mesmo mês geram 3 entradas."""
+    """40920 + 40923 + 50920: 13º vai para dezembro."""
     reg = [1500.0] * 12
     dec = [0.0] * 12
     dec[9] = 1747.69  # outubro
@@ -186,11 +184,16 @@ def test_combinado_tres_tipos():
     entrada = _dict_por_ano(regular=reg, decimo=dec, diferenca=dif)
     resultado = gerar_matriz_mensal(entrada, "01/2024", "12/2024")
 
-    # outubro deve ter: regular + 13º + diferença
+    # outubro: regular + diferença (13º foi para dezembro)
     out_entries = [r for r in resultado if r["competencia"] == "2024-10"]
-    assert len(out_entries) == 3
+    assert len(out_entries) == 2
     origens = {r["origem"] for r in out_entries}
-    assert origens == {"40920", "40923", "50920"}
+    assert origens == {"40920", "50920"}
+
+    # dezembro: regular + 13º
+    dez_entries = [r for r in resultado if r["competencia"] == "2024-12"]
+    assert len(dez_entries) == 2
+    assert {r["origem"] for r in dez_entries} == {"40920", "40923"}
 
     assert len(resultado) == 14  # 12 reg + 1 dec + 1 dif
 
@@ -217,7 +220,7 @@ def test_periodo_parcial_meio_ano():
 
 
 def test_multianual_com_decimos():
-    """13º em anos diferentes, cada um no mês correto de cada ano."""
+    """13º em anos diferentes, ambos em dezembro."""
     reg_2023 = [1500.0] * 12
     dec_2023 = [0.0] * 12
     dec_2023[11] = 1733.65  # dezembro 2023
@@ -237,16 +240,15 @@ def test_multianual_com_decimos():
 
     dec_entries = [r for r in resultado if r["origem"] == "40923"]
     assert len(dec_entries) == 2
-    assert dec_entries[0]["competencia"] == "2023-12"
-    assert dec_entries[0]["valor_final"] == 1733.65
-    assert dec_entries[1]["competencia"] == "2024-11"
-    assert dec_entries[1]["valor_final"] == 1747.69
+    dec_by_comp = {r["competencia"]: r for r in dec_entries}
+    assert dec_by_comp["2023-12"]["valor_final"] == 1733.65
+    assert dec_by_comp["2024-12"]["valor_final"] == 1747.69
 
 
 def test_cenario_livia():
     """
     Caso real: Lívia — 40923 apenas em novembro/2024.
-    Deve gerar entrada 13º em 2024-11, não em 2024-12.
+    13º emitido em dezembro (ODS usa dezembro).
     """
     reg = [1747.69] * 12
     dec = [0.0] * 12
@@ -256,9 +258,5 @@ def test_cenario_livia():
 
     dec_entries = [r for r in resultado if r["origem"] == "40923"]
     assert len(dec_entries) == 1
-    assert dec_entries[0]["competencia"] == "2024-11"
+    assert dec_entries[0]["competencia"] == "2024-12"
     assert dec_entries[0]["valor_final"] == 1747.69
-
-    # Garante que NÃO tem entrada 13º em dezembro
-    dec_dez = [r for r in dec_entries if r["competencia"] == "2024-12"]
-    assert len(dec_dez) == 0

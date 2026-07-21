@@ -217,20 +217,10 @@ def _bloco_beneficiario(ws, linha, r) -> None:
 
     # ── Todos os dados na ordem de _ordenar_ods ──
     linha_ini = linha
-    linha_fim_mensal = None
-    linha_fim_13 = None
     for p in r.parcelas:
         _escrever_linha_dados(ws, linha, p, r, tipo=p.tipo)
-        if p.tipo != "decimo_terceiro":
-            linha_fim_mensal = linha
-        else:
-            linha_fim_13 = linha
         linha += 1
-    if linha_fim_13 is None:
-        linha_fim_13 = linha_fim_mensal
-    if linha_fim_mensal is None:
-        linha_fim_mensal = linha_fim_13
-    linha_fim_tudo = max(linha_fim_mensal, linha_fim_13)
+    linha_fim_tudo = linha - 1
 
     # ── Total ──
     primeiro = linha_ini
@@ -261,19 +251,21 @@ def _bloco_beneficiario(ws, linha, r) -> None:
                      alignment=_ALINH_CENTRO, border=_BORDA_FINA)
     linha += 1
 
-    # 30920 — regular + diferença
+    # 30920 — regular + diferença (exclui 13º)
     _escrever_celula(ws, linha, 1, "30920 - SEGURIDADE SOCIAL", _FONTE_RUB_TITULO,
                      alignment=_ALINH_CENTRO, fill=_FILL_VERDE, border=_BORDA_FINA)
-    _escrever_celula(ws, linha, 2, f"=SUM(B{linha_ini}:B{linha_fim_mensal})",
+    _escrever_celula(ws, linha, 2,
+                     f'=SUMIFS(B{linha_ini}:B{linha_fim_tudo};C{linha_ini}:C{linha_fim_tudo};"<>*13º SAL*")',
                      _FONTE_RUB_VALOR, _MOEDA, _ALINH_CENTRO, _FILL_VERDE, _BORDA_FINA)
     _escrever_celula(ws, linha, 3, mes_alvo, _FONTE_RUB_TITULO,
                      alignment=_ALINH_CENTRO, border=_BORDA_FINA)
     linha += 1
 
-    # 30923 — 13º salário
+    # 30923 — 13º salário (soma condicional pela descrição)
     _escrever_celula(ws, linha, 1, "30923 - SEG. SOC. - 13º SAL.", _FONTE_RUB_TITULO,
                      alignment=_ALINH_CENTRO, fill=_FILL_VERDE, border=_BORDA_FINA)
-    _escrever_celula(ws, linha, 2, f"=SUM(B{linha_fim_mensal + 1}:B{linha_fim_13})",
+    _escrever_celula(ws, linha, 2,
+                     f'=SUMIFS(B{primeiro}:B{ultimo};C{primeiro}:C{ultimo};"*13º SAL*")',
                      _FONTE_RUB_VALOR, _MOEDA, _ALINH_CENTRO, _FILL_VERDE, _BORDA_FINA)
     linha += 1
 

@@ -92,9 +92,11 @@ def parse_competencia(texto: str) -> date:
         ano = int(m_pt.group(2)) + 2000
         return date(ano, mes_num, 1)
 
-    if "-" in t and "/" not in t:  # formato ISO parcial AAAA-MM
-        ano, mes = t.split("-")[:2]
-        return date(int(ano), int(mes), 1)
+    if "-" in t and "/" not in t:  # formato ISO AAAA-MM ou AAAA-MM-DD
+        partes = t.split("-")
+        ano, mes = int(partes[0]), int(partes[1])
+        dia = int(partes[2]) if len(partes) >= 3 else 1
+        return date(ano, mes, dia)
 
     partes = t.split("/")
     if len(partes) == 3:  # DD/MM/AAAA
