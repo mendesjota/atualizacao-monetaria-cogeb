@@ -55,7 +55,7 @@ src/extrator_ods_gabarito.py → Extrai beneficiários do ODS gabarito oficial
 - IPCA-E series fetched once per run (cached in `SindecClient._cache_ipcae`).
 - Console: `sys.stdout` / `sys.stderr` reconfigured to UTF-8 (Windows cp1252 fix in `main.py`).
 - **Diferenca (50920)**: extraído como tipo `diferenca`, renderizado com descrição `DIFERENÇA DE SEGURIDADE SOCIAL`. Ordenação: regular → diferenca → decimo_terceiro, cronológico.
-- **Excel rubricas**: 30920 usa `SUMIFS` com `"<>*13º SAL*"` (regular + diferença), 30923 usa `SUMIFS` com `"*13º SAL*"` (apenas 13º). Ambos condicionais pela coluna C (descrição).
+- **Excel rubricas**: valores pré-calculados em Python, não fórmulas. 30920 = soma de TODOS os valor_original (inclui 13º), 30923 = apenas 13º (subconjunto de 30920), 20827 = soma da correção. Total corrigido = 30920 + 20827 = G25.
 
 ## Input format
 

@@ -252,7 +252,7 @@ def _bloco_beneficiario(ws, linha, r) -> None:
     linha += 1
 
     # Pré-calcula valores das rubricas a partir das parcelas
-    sum_regular = round(sum(p.valor_original for p in r.parcelas if p.tipo != "decimo_terceiro"), 2)
+    sum_regular = round(sum(p.valor_original for p in r.parcelas), 2)
     sum_decimo = round(sum(p.valor_original for p in r.parcelas if p.tipo == "decimo_terceiro"), 2)
     sum_correcao = round(sum(p.correcao for p in r.parcelas), 2)
 
