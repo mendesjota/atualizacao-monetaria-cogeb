@@ -252,8 +252,8 @@ def _bloco_beneficiario(ws, linha, r) -> None:
     linha += 1
 
     # Pré-calcula valores das rubricas a partir das parcelas
-    sum_regular = round(sum(p.valor_corrigido for p in r.parcelas if p.tipo != "decimo_terceiro"), 2)
-    sum_decimo = round(sum(p.valor_corrigido for p in r.parcelas if p.tipo == "decimo_terceiro"), 2)
+    sum_regular = round(sum(p.valor_original for p in r.parcelas if p.tipo != "decimo_terceiro"), 2)
+    sum_decimo = round(sum(p.valor_original for p in r.parcelas if p.tipo == "decimo_terceiro"), 2)
     sum_correcao = round(sum(p.correcao for p in r.parcelas), 2)
 
     # 30920 — regular + diferença (exclui 13º)
