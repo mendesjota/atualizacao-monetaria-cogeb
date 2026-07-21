@@ -225,6 +225,17 @@ def main_completo(entrada: Path, saida: Path, xls_path: Path = None) -> int:
           f"{total_parcelas} parcela(s), "
           f"total corrigido R$ {total_geral:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."))
     print(f"✔ Saída: {caminho}")
+
+    # ── Limpeza: remove fichas baixadas e checkpoint ──
+    pasta_fichas = RAIZ / "fichas financeiras"
+    removidos = 0
+    if pasta_fichas.exists():
+        for f in pasta_fichas.glob("FICHA-FIN-*.xls"):
+            f.unlink()
+            removidos += 1
+    if CHECKPOINT_FILE.exists():
+        CHECKPOINT_FILE.unlink()
+    print(f"✔ {removidos} ficha(s) removida(s) e checkpoint limpo.")
     return 0
 
 
